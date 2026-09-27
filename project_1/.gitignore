@@ -1,0 +1,27 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+
+# Assignment files
+EvaluationForm.md
+Notater til P1.odt
+.~lock.Notater til P1.odt#
+Project1.ipynb
+Project1.pdf
+Project1.tex
+
+# Latex helper files
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.synctex.gz
