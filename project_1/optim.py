@@ -16,7 +16,7 @@ LLM-assisted
 Tool: Claude (Opus 5.5, claude.ai, September 2026)
 Role: Wrote the module (level 4) following the course's reference
 implementation (optimiser_step, optimise, sgd in the week-38/39 notebooks)
-and the conventions agreed with the author.
+and the conventions agreed with the authors.
 Verification: tests.py (analytic gradients against JAX, gradient descent
 against the closed-form OLS and Ridge solutions, Lasso against scikit-learn),
 and the checks printed by part_e-part_h in main.py.

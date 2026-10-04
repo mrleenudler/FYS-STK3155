@@ -12,7 +12,7 @@ LLM-assisted
 Tool: Claude (Opus 5.5, claude.ai, September 2026)
 Role: Wrote the module (level 4) after the choices of data generation,
 scaling, centering and intercept handling had been discussed and agreed on
-with the author. Every function below carries a short LLM-assisted tag that
+with the authors. Every function below carries a short LLM-assisted tag that
 refers to this note.
 Verification: tests.py (OLS against scikit-learn, exact recovery of a
 noise-free polynomial, invariance of OLS predictions under scaling, recovery

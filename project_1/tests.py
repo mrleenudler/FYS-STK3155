@@ -9,7 +9,7 @@ LLM-assisted
 ------------
 Tool: Claude (Opus 5.5, claude.ai, September 2026)
 Role: Wrote the file (level 4). The choice of what to test follows the
-checks discussed with the author: agreement with scikit-learn, exact
+checks discussed with the authors: agreement with scikit-learn, exact
 recovery of a known polynomial, invariance of OLS predictions under
 scaling, recovery of the intercept after centering, and for Ridge the
 agreement with scikit-learn and with the SVD form of the solution. For

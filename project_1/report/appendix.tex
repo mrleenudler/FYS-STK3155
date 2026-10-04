@@ -43,7 +43,7 @@
     \end{tabular}
 \end{table}
 
-\emph{Level 3 note.} The text was drafted by Claude from our dialogue about the methods and the results. For the results, I interpreted the figures and the logged output of the code myself first; Claude corrected my interpretation and drafted the text from it. I read, corrected and approved all sections, and statements I could not explain myself were simplified or removed. Every number in the text was checked against the logged output of the code in a separate pass by Claude.
+\emph{Level 3 note.} The text was drafted by Claude from our dialogue about the methods and the results. For the results, we interpreted the figures and the logged output of the code ourselves first; Claude corrected our interpretation and drafted the text from it. We read, corrected and approved all sections, and statements we could not explain ourselves were simplified or removed. Every number in the text was checked against the logged output of the code in a separate pass by Claude.
 
 \paragraph*{Code.} Contribution levels as defined in the course guidelines. Every function and class carries an \texttt{LLM-assisted} tag in its docstring that refers to the note at the top of its file.
 
@@ -53,12 +53,12 @@
         \toprule
         File & Level & Description \\
         \midrule
-        \texttt{common.py} & 4 & Data, design matrix, scaling, OLS and Ridge solvers, scikit-learn Lasso, error measures, bootstrap, scikit-learn wrapper. Written by Claude from choices agreed with the author. \\
+        \texttt{common.py} & 4 & Data, design matrix, scaling, OLS and Ridge solvers, scikit-learn Lasso, error measures, bootstrap, scikit-learn wrapper. Written by Claude from choices agreed with the authors. \\
         \texttt{optim.py} & 4 & Cost, gradients (analytic and JAX), update rules, gradient descent and SGD, following the course's reference implementation. Written by Claude. \\
-        \texttt{main.py} & 4 & One function per project part, figures and logged output. Written by Claude from the experiments agreed with the author. \\
-        \texttt{tests.py} & 4 & Unit tests. Written by Claude; the checks were chosen together with the author. \\
+        \texttt{main.py} & 4 & One function per project part, figures and logged output. Written by Claude from the experiments agreed with the authors. \\
+        \texttt{tests.py} & 4 & Unit tests. Written by Claude; the checks were chosen together with the authors. \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-The results in this report were produced by running the code in Claude's code-execution workspace. The code was tested against scikit-learn, JAX and the closed-form solutions (Sec.~\ref{sec:validation}), and the choices behind the experiments (seeds, repetitions, grids, what to compare) were discussed and agreed on before the code was written.
+The results were first produced by running the code in Claude's code-execution workspace and then reproduced by running it locally; the numbers in this report are from the local run. The code was tested against scikit-learn, JAX and the closed-form solutions (Sec.~\ref{sec:validation}), and the choices behind the experiments (seeds, repetitions, grids, what to compare) were discussed and agreed on before the code was written.

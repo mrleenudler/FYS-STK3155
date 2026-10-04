@@ -17,7 +17,7 @@ d and i); seed 42 is the single split that is also reported on its own.
 LLM-assisted
 ------------
 Tool: Claude (Opus 5.5, claude.ai, September 2026)
-Role: Wrote the file (level 4) from the choices agreed with the author:
+Role: Wrote the file (level 4) from the choices agreed with the authors:
 x ~ U[-1, 1], 80/20 split, standardised columns and centred y with training
 statistics, OLS via the pseudoinverse, Ridge with the 1/n convention,
 repetitions with fixed seeds, medians with interquartile bands, and the
