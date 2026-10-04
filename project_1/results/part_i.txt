@@ -1,0 +1,40 @@
+========================================================================
+Part i) Final model selection with cross-validation
+========================================================================
+n = 100, sigma = 0.1, 20 data sets. For each: 80/20 split; 5-fold CV on the 80 training points over degree 1-16 (and lambda); refit the selected model on all 80; test once on the 20; MSE on new data from the known f.
+Ridge lambdas: 1e-08, 1e-07, 1e-06, 1e-05, 1e-04, 1e-03, 1e-02, 1e-01, 1e+00; Lasso lambdas: 1e-06, 1e-05, 1e-04, 1e-03, 1e-02, 1e-01 (Lasso by scikit-learn)
+Lasso*: Lasso with lambda >= 0.001 only, chosen from the same CV grid
+
+Selected models (median over data sets; [25th, 75th percentile])
+method         degree    lambda     CV MSE   test MSE   new data  nonzero
+   OLS    10 [9.5, 12.25]    0.0e+00 1.5791e-02 1.5455e-02 1.4064e-02       10
+ Ridge  11.5 [10, 13]    1.0e-07 1.4874e-02 1.3345e-02 1.3551e-02     11.5
+ Lasso    12 [8, 13]    5.5e-06 1.6304e-02 1.3937e-02 1.4011e-02       12
+Lasso*  11.5 [6, 14]    1.0e-03 2.0746e-02 1.8351e-02 1.8542e-02        6
+     OLS: MSE on new data, 25th-75th percentile over data sets 1.3203e-02 - 1.5004e-02; largest 6.267e-01; selected models with at least one zero coefficient: 0 of 20
+   Ridge: MSE on new data, 25th-75th percentile over data sets 1.3118e-02 - 1.4620e-02; largest 1.978e-02; selected models with at least one zero coefficient: 0 of 20
+   Lasso: MSE on new data, 25th-75th percentile over data sets 1.3592e-02 - 1.4687e-02; largest 1.769e-02; selected models with at least one zero coefficient: 4 of 20
+  Lasso*: MSE on new data, 25th-75th percentile over data sets 1.7948e-02 - 1.9441e-02; largest 2.086e-02; selected models with at least one zero coefficient: 16 of 20
+     OLS: selected degrees [8, 8, 8, 8, 8, 10, 10, 10, 10, 10, 10, 10, 11, 11, 12, 13, 14, 14, 16, 16]
+   Ridge: selected degrees [8, 8, 8, 10, 10, 10, 10, 10, 11, 11, 12, 12, 12, 13, 13, 13, 13, 14, 16, 16]; lambdas 1e-08 x6, 1e-07 x5, 1e-06 x6, 1e-05 x3
+   Lasso: selected degrees [8, 8, 8, 8, 8, 8, 10, 11, 11, 12, 12, 13, 13, 13, 13, 13, 14, 14, 14, 16]; lambdas 1e-06 x10, 1e-05 x5, 1e-04 x5
+  Lasso*: selected degrees [6, 6, 6, 6, 6, 6, 6, 6, 7, 11, 12, 13, 14, 14, 14, 14, 15, 16, 16, 16]; lambdas 1e-03 x20
+  Selected Lasso fits (scikit-learn, at most 100000 iterations): 18 of 20 stopped at the iteration limit; duality gap (our cost units) median 8.2e-03, max 1.4e-02, against a median cost of 1.3e-02
+  Selected Lasso* fits (scikit-learn, at most 100000 iterations): 0 of 20 stopped at the iteration limit; duality gap (our cost units) median 2.0e-09, max 2.3e-09, against a median cost of 2.2e-02
+  best on new data per data set (OLS, Ridge, Lasso): OLS 6, Ridge 7, Lasso 7
+  Median CV MSE (best lambda per degree) against degree 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+     OLS: 0.1012 0.0506 0.0516 0.0308 0.0324 0.0226 0.0248 0.0194 0.0205 0.0173 0.0182 0.0212 0.0267 0.0223 0.0367 0.0355
+   Ridge: 0.1005 0.0505 0.0510 0.0305 0.0311 0.0221 0.0232 0.0180 0.0186 0.0164 0.0159 0.0154 0.0156 0.0158 0.0175 0.0161
+   Lasso: 0.1001 0.0504 0.0507 0.0302 0.0305 0.0217 0.0221 0.0179 0.0186 0.0182 0.0186 0.0177 0.0174 0.0172 0.0180 0.0180
+  Lasso*: 0.1001 0.0504 0.0507 0.0302 0.0305 0.0217 0.0221 0.0227 0.0233 0.0227 0.0227 0.0218 0.0222 0.0212 0.0217 0.0214
+
+Bootstrap at degree 14 (100 resamples; median over the 20 data sets)
+                  method      error     bias^2  bias^2 (f)   variance
+                     OLS  1.016e-01  1.673e-02   7.963e-03  8.663e-02
+  Ridge (lambda=1.0e-07)  3.610e-02  1.323e-02   3.081e-03  2.389e-02
+  Lasso (lambda=5.5e-06)  2.404e-02  1.386e-02   3.981e-03  1.274e-02
+  Lasso (lambda=1.0e-03)  2.126e-02  1.782e-02   8.939e-03  2.319e-03
+  Lasso at degree 14, lambda = 5.5e-06, on the full training sets: 20 of 20 stopped at the iteration limit; median duality gap 8.5e-03 (our cost units)
+  Lasso at degree 14, lambda = 1.0e-03, on the full training sets: 0 of 20 stopped at the iteration limit; median duality gap 2.0e-09 (our cost units)
+
+Figures saved in figures/

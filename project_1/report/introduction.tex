@@ -1,0 +1,14 @@
+% =====================================================================
+% I. INTRODUCTION
+% LLM declaration: text level 3; see Appendix "Use of AI/LLM tools".
+% =====================================================================
+
+\section{Introduction}\label{sec:intro}
+
+Fitting a model to noisy data means choosing how complex the model should be. A model that is too simple misses the structure in the data, while a model that is too flexible follows the noise and changes a lot from one data set to the next. Polynomial regression is the simplest setting where this trade-off between bias and variance can be studied in detail, and the tools needed for it, least squares, shrinkage, resampling and gradient-based optimisation, are the same tools that are used to train more advanced models such as neural networks.
+
+We used Runge's function, $f(x) = 1/(1 + 25x^2)$ on $[-1, 1]$ \cite{Runge1901}. It is smooth and even, but a polynomial needs a high degree to follow its sharp peak, and high-degree polynomials oscillate near the edges of the interval. The best degree therefore depends clearly on the number of data points and the noise, which makes the function well suited for studying model selection.
+
+We fitted polynomials with ordinary least squares (OLS), Ridge and Lasso regression. The closed-form OLS and Ridge solutions, the scaling, the bootstrap, the gradient-descent methods (plain, momentum, AdaGrad, RMSProp, Adam and stochastic gradient descent) and the Lasso solver based on subgradients are our own code, built on NumPy \cite{Harris2020}. We used scikit-learn \cite{Pedregosa2011} for the train--test split, the $k$-fold cross-validation loop, the Lasso solver in the final model selection, and as a reference for OLS, Ridge and Lasso, and JAX \cite{Jax2018} for automatic differentiation. All methods follow the course notes \cite{HjorthJensen2026}. To separate real effects from the randomness of a single small data set, we repeated the regression and resampling experiments on many data sets with different seeds.
+
+Section~\ref{sec:methods} describes the methods, the implementation and how it was tested. Section~\ref{sec:results} presents and discusses the results in the order of the project parts: OLS, Ridge, the bias--variance trade-off with the bootstrap, cross-validation, gradient descent with fixed and adaptive learning rates, Lasso, stochastic gradient descent, and the final model selection. Section~\ref{sec:conclusion} summarises the findings. The appendix contains supplementary figures and the declaration of the use of AI tools. All code, the logged output and the figures are available on GitHub\footnote{\url{https://github.com/mrleenudler/FYS-STK3155/tree/main/project_1}}.

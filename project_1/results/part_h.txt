@@ -1,0 +1,54 @@
+========================================================================
+Part h) Stochastic gradient descent
+========================================================================
+OLS, degree 6, 80 training points. Closed form: training MSE 1.6322e-02, test MSE 1.5751e-02
+Largest per-sample curvature 2||x_i||^2 = 112.6 (gamma < 0.0178 for stability with batch size 1)
+
+Plain SGD, constant gamma = 0.05: excess training cost after 10 / 100 / 1000 epochs, test MSE after 1000
+  M =   1 ( 80 updates/epoch): 1.45e-01 / 1.18e-02 / 1.85e-02, test 5.8251e-02
+  M =   5 ( 16 updates/epoch): 1.81e-02 / 9.97e-03 / 1.66e-04, test 1.6387e-02
+  M =  10 (  8 updates/epoch): 2.10e-02 / 1.27e-02 / 1.03e-03, test 1.7340e-02
+  M =  20 (  4 updates/epoch): 2.95e-02 / 1.42e-02 / 3.87e-03, test 2.0283e-02
+  M =  80 (  1 updates/epoch): 4.46e-02 / 1.89e-02 / 1.11e-02, test 2.5438e-02
+
+Batch size M = 5: excess training cost after 10 / 100 / 1000 epochs, test MSE after 1000
+  plain, gamma = 0.05         : 1.81e-02 / 9.97e-03 / 1.66e-04, test 1.6387e-02
+  plain, schedule 50/(t+500)  : 2.19e-02 / 9.86e-03 / 4.56e-03, test 2.1051e-02
+  momentum, gamma = 0.01      : 1.47e-02 / 6.40e-03 / 2.81e-03, test 1.4571e-02
+  RMSProp, gamma = 1e-3       : 3.87e-02 / 1.54e-02 / 5.61e-03, test 2.1613e-02
+  Adam, gamma = 0.01          : 1.63e-02 / 8.13e-03 / 1.40e-03, test 1.4907e-02
+  full-batch plain     gamma = 0.259: 3.87e-02 / 1.37e-02 / 2.59e-03 after the same number of passes through the data
+  full-batch momentum  gamma = 0.1: 2.97e-02 / 8.10e-03 / 1.48e-05 after the same number of passes through the data
+  full-batch adam      gamma = 0.05: 2.86e-02 / 9.76e-03 / 2.19e-10 after the same number of passes through the data
+
+Passes through the data (epochs) to reach excess cost < 0.001:
+  SGD M=1 plain 0.05                      : 289
+  SGD M=5 plain 0.05                      : 523
+  SGD M=10 plain 0.05                     : -
+  SGD M=20 plain 0.05                     : -
+  SGD M=80 plain 0.05                     : -
+  SGD M=5 plain, gamma = 0.05             : 523
+  SGD M=5 plain, schedule 50/(t+500)      : -
+  SGD M=5 momentum, gamma = 0.01          : 269
+  SGD M=5 RMSProp, gamma = 1e-3           : -
+  SGD M=5 Adam, gamma = 0.01              : 333
+  full-batch plain                        : -
+  full-batch momentum                     : 397
+  full-batch adam                         : 315
+
+Passes through the data (epochs) to reach excess cost < 0.0001:
+  SGD M=1 plain 0.05                      : -
+  SGD M=5 plain 0.05                      : -
+  SGD M=10 plain 0.05                     : -
+  SGD M=20 plain 0.05                     : -
+  SGD M=80 plain 0.05                     : -
+  SGD M=5 plain, gamma = 0.05             : -
+  SGD M=5 plain, schedule 50/(t+500)      : -
+  SGD M=5 momentum, gamma = 0.01          : 563
+  SGD M=5 RMSProp, gamma = 1e-3           : -
+  SGD M=5 Adam, gamma = 0.01              : 641
+  full-batch plain                        : -
+  full-batch momentum                     : 727
+  full-batch adam                         : 465
+
+Figures saved in figures/

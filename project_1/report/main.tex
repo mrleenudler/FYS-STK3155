@@ -1,0 +1,48 @@
+% FYS-STK3155 Project 1. Compile with
+%   pdflatex main && bibtex main && pdflatex main && pdflatex main
+% Figures are read from ../figures/.
+\documentclass[english,notitlepage,reprint,nofootinbib,floatfix]{revtex4-1}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\graphicspath{{../figures/}}
+
+\definecolor{termBg}{HTML}{0C0C0C}
+\definecolor{termText}{HTML}{CCCCCC}
+\lstdefinestyle{terminal}{
+  backgroundcolor=\color{termBg},
+  basicstyle=\ttfamily\scriptsize\color{termText},
+  breaklines=true, showstringspaces=false, frame=none,
+  xleftmargin=4pt, xrightmargin=4pt,
+  framexleftmargin=4pt, framexrightmargin=4pt,
+  framextopmargin=4pt, framexbottommargin=4pt,
+}
+
+\begin{document}
+\title{Regression analysis, resampling methods and gradient descent applied to Runge's function}
+\author{andreand}
+\affiliation{University of Oslo}
+\date{\today}
+
+\begin{abstract}
+Fitting a polynomial to Runge's function is a classic example of how model complexity trades bias against variance. We studied ordinary least squares (OLS), Ridge and Lasso regression on noisy samples of this function, with our own code for the closed-form solutions, the bootstrap and gradient-descent methods, and scikit-learn for cross-validation and as a reference. Over 200 data sets with 100 points and noise level 0.1, the median test error of OLS fell to 0.0125 at degree 14; a single split was unrepresentative, and the mean was dominated by a few extreme fits caused by extrapolation and gaps in the data. The bootstrap showed the variance overtaking the measured bias from degree 11 but overestimated the error at high degree, whereas cross-validation followed the true error closely. Ridge with a small penalty gave the lowest cross-validation error (0.0149, against 0.0158 for OLS) by suppressing the variance at high degree, although the differences were small compared with those between data sets. Momentum needed the fewest gradient-descent iterations, and Adam was the least sensitive to the learning rate.
+\end{abstract}
+
+\maketitle
+
+\input{introduction.tex}
+\input{methods.tex}
+\input{results.tex}
+\input{conclusion.tex}
+\input{appendix.tex}
+
+\bibliographystyle{apsrev4-1}
+\bibliography{refs}
+\end{document}

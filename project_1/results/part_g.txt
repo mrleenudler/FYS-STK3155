@@ -1,0 +1,57 @@
+========================================================================
+Part g) Lasso by gradient descent
+========================================================================
+jax.grad(jnp.abs) at 0.0: 1.0, at -0.0: 1.0; analytic sign(0) = 0.0
+Subdifferential of |t| at 0 is [-1, 1], so both 1 and 0 are valid subgradients.
+Degree 6; plain GD gamma = 0.2594 (0.99 gamma_max of the data term) and Adam gamma = 1e-3, 100000 iterations each, JAX gradient. scikit-learn Lasso with alpha = lambda/2.
+
+lambda = 0.0001
+               theta_1      theta_2      theta_3      theta_4      theta_5      theta_6       cost - C_skl
+  scikit-learn  +0.0538  -1.3943  -0.0392  +2.3752  -0.0088  -1.2455      0.00e+00
+      plain GD  +0.0538  -1.3943  -0.0392  +2.3752  -0.0088  -1.2455     -2.36e-16
+          Adam  +0.0538  -1.3943  -0.0392  +2.3752  -0.0088  -1.2455     -2.36e-16
+  zero coefficients in scikit-learn: 0; KKT |(2/n) x_j^T r| for these: - (must be <= lambda = 0.0001)
+  smallest |theta_j| from GD: plain 8.8e-03, Adam 8.8e-03
+
+lambda = 0.001
+               theta_1      theta_2      theta_3      theta_4      theta_5      theta_6       cost - C_skl
+  scikit-learn  +0.0410  -1.2637  -0.0341  +2.0380  -0.0026  -1.0282      0.00e+00
+      plain GD  +0.0410  -1.2637  -0.0341  +2.0380  -0.0026  -1.0282     -3.16e-16
+          Adam  +0.0410  -1.2637  -0.0341  +2.0380  -0.0026  -1.0282     -3.23e-16
+  zero coefficients in scikit-learn: 0; KKT |(2/n) x_j^T r| for these: - (must be <= lambda = 0.001)
+  smallest |theta_j| from GD: plain 2.6e-03, Adam 2.6e-03
+
+lambda = 0.01
+               theta_1      theta_2      theta_3      theta_4      theta_5      theta_6       cost - C_skl
+  scikit-learn  -0.0015  -0.5953  -0.0010  +0.3900  -0.0000  +0.0000      0.00e+00
+      plain GD  -0.0522  -0.4870  -0.1501  +0.3576  -0.0184  +0.1500      1.26e-01
+          Adam  -0.0016  -0.5954  -0.0009  +0.3898  -0.0002  +0.0000      1.54e-06
+  zero coefficients in scikit-learn: 2; KKT |(2/n) x_j^T r| for these: 4.82e-03, 3.87e-03 (must be <= lambda = 0.01)
+  smallest |theta_j| from GD: plain 1.8e-02, Adam 2.6e-05
+
+Plain subgradient GD for lambda = 0.01 (analytic subgradient, sign(0) = 0), 100000 iterations.
+  Steepest mode: multiplier 1 - gamma mu_max per step (mu: Hessian eigenvalues), and the component of theta - theta_skl along its eigenvector in the last two iterations.
+  gamma = 0.99 gamma_max: excess cost over the last 1000 iterations 1.2e-01 ... 1.3e-01; theta_5, theta_6 = -0.0184, +0.1502; multiplier -0.98, steepest mode -0.1776, +0.1812; coefficients changing sign in the last step: 4
+  gamma = 0.90 gamma_max: excess cost over the last 1000 iterations 5.8e-04 ... 1.6e-03; theta_5, theta_6 = -0.0011, +0.0114; multiplier -0.80, steepest mode -0.0162, +0.0175; coefficients changing sign in the last step: 3
+  gamma = 0.50 gamma_max: excess cost over the last 1000 iterations 2.1e-06 ... 3.4e-05; theta_5, theta_6 = -0.0005, -0.0002; multiplier +0.00, steepest mode +0.0005, -0.0006; coefficients changing sign in the last step: 1
+  gamma = 0.10 gamma_max: excess cost over the last 1000 iterations 8.3e-08 ... 4.5e-06; theta_5, theta_6 = -0.0001, -0.0000; multiplier +0.80, steepest mode +0.0000, -0.0001; coefficients changing sign in the last step: 1
+
+Test MSE at degree 6 (seed 42):
+  OLS closed form: 1.5751e-02
+  Ridge lambda = 0.0001: 1.5939e-02
+  Ridge lambda = 0.001: 1.8233e-02
+  Ridge lambda = 0.01: 2.4435e-02
+  Lasso lambda = 0.0001, scikit-learn: 1.5768e-02
+  Lasso lambda = 0.0001, plain GD: 1.5768e-02
+  Lasso lambda = 0.0001, Adam: 1.5768e-02
+  Lasso lambda = 0.001, scikit-learn: 1.6191e-02
+  Lasso lambda = 0.001, plain GD: 1.6191e-02
+  Lasso lambda = 0.001, Adam: 1.6191e-02
+  Lasso lambda = 0.01, scikit-learn: 2.3975e-02
+  Lasso lambda = 0.01, plain GD: 3.6991e-02
+  Lasso lambda = 0.01, Adam: 2.3963e-02
+  path: lambda = 0.001: 0 of 6 coefficients exactly zero, nonzero powers [1, 2, 3, 4, 5, 6]
+  path: lambda = 0.01: 2 of 6 coefficients exactly zero, nonzero powers [1, 2, 3, 4]
+  path: lambda = 0.1: 5 of 6 coefficients exactly zero, nonzero powers [2]
+
+Figures saved in figures/

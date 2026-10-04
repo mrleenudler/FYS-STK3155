@@ -6,17 +6,25 @@ dist/
 wheels/
 *.egg-info
 
+# Unnecessary folders
+Deloppgave a/
+final not/
+gammelt/
+rapport rewrite/
+
 # Virtual environments
 .venv
 
 
 # Assignment files
 EvaluationForm.md
+ReportExampleDanielBH.pdf
 Notater til P1.odt
 .~lock.Notater til P1.odt#
 Project1.ipynb
 Project1.pdf
 Project1.tex
+
 
 # Latex helper files
 *.aux
@@ -25,3 +33,7 @@ Project1.tex
 *.bbl
 *.blg
 *.synctex.gz
+
+# User process files
+notater og spørsmål til claude.txt
+

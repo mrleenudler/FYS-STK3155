@@ -1,0 +1,173 @@
+% =====================================================================
+% II. METHODS
+% Numbers are taken from results/part_a.txt ... results/part_i.txt. Needs: amsmath, graphicx, booktabs, listings
+% ("terminal" style), algorithm2e (algorithm/algpseudocode clash with revtex).
+% LLM declaration: text level 3 (Claude drafted from the author's analysis
+% in dialogue); see the appendix note.
+% =====================================================================
+
+\section{Methods}\label{sec:methods}
+
+\subsection{Data}\label{sec:data}
+
+We used Runge's function \cite{Runge1901},
+$$
+f(x) = \frac{1}{1 + 25x^2}, \qquad x \in [-1, 1].
+$$
+The $x$ values were drawn uniformly from $[-1, 1]$, and the targets were $y_i = f(x_i) + \varepsilon_i$ with $\varepsilon_i \sim \mathcal{N}(0, \sigma^2)$. Unless stated otherwise we used $n = 100$ points and $\sigma = 0.1$. The data were split once into 80\,\% training and 20\,\% test data with \texttt{train\_test\_split} from scikit-learn \cite{Pedregosa2011}. One integer seed fixes both the data (the $x$ values and the noise) and the split, so a seed always reproduces the same experiment.
+
+\subsection{Ordinary least squares}\label{sec:ols}
+
+For a polynomial of degree $d$ the design matrix $\mathbf{X}$ has the columns $x, x^2, \dots, x^d$, and the prediction is $\tilde{\mathbf{y}} = \mathbf{X}\boldsymbol{\theta}$. Following the course notes \cite{HjorthJensen2026} we use the cost function
+$$
+C(\boldsymbol{\theta}) = \frac{1}{n}\lVert \mathbf{y} - \mathbf{X}\boldsymbol{\theta} \rVert^2 .
+$$
+Setting the gradient $-\frac{2}{n}\mathbf{X}^T(\mathbf{y} - \mathbf{X}\boldsymbol{\theta})$ to zero gives the normal equations $\mathbf{X}^T\mathbf{X}\boldsymbol{\theta} = \mathbf{X}^T\mathbf{y}$. They state that the residual $\mathbf{y} - \tilde{\mathbf{y}}$ is orthogonal to every column of $\mathbf{X}$, so $\tilde{\mathbf{y}}$ is the orthogonal projection of $\mathbf{y}$ onto the space spanned by the columns. The cost is quadratic in $\boldsymbol{\theta}$, so the solution is the minimum. We computed $\hat{\boldsymbol{\theta}} = \mathbf{X}^{+}\mathbf{y}$ with the pseudoinverse \texttt{np.linalg.pinv} \cite{Harris2020}, which works on $\mathbf{X}$ through its singular value decomposition; forming $\mathbf{X}^T\mathbf{X}$ would square the condition number, $\kappa(\mathbf{X}^T\mathbf{X}) = \kappa(\mathbf{X})^2$.
+
+We measured the fit with the mean squared error and the coefficient of determination,
+$$
+\mathrm{MSE} = \frac{1}{n}\sum_i (y_i - \tilde{y}_i)^2, \qquad
+R^2 = 1 - \frac{\sum_i (y_i - \tilde{y}_i)^2}{\sum_i (y_i - \bar{y})^2},
+$$
+where $\bar{y}$ is the mean of the data the model is evaluated on.
+
+\subsection{Ridge regression and the singular value decomposition}\label{sec:ridge}
+
+Ridge regression adds a penalty on the size of the coefficients,
+$$
+C(\boldsymbol{\theta}) = \frac{1}{n}\lVert \mathbf{y} - \mathbf{X}\boldsymbol{\theta} \rVert^2 + \lambda \lVert \boldsymbol{\theta} \rVert^2 ,
+$$
+with the solution
+$$
+\left(\mathbf{X}^T\mathbf{X} + n\lambda \mathbf{I}\right)\hat{\boldsymbol{\theta}} = \mathbf{X}^T\mathbf{y}.
+$$
+The factor $n$ comes from the $1/n$ on the data term; scikit-learn's \texttt{alpha} corresponds to $n\lambda$. We solved the system with \texttt{np.linalg.solve}. Seen in parameter space, the penalty adds a round bowl centred at $\boldsymbol{\theta} = 0$ to the cost landscape and moves the minimum towards the origin.
+
+The singular value decomposition $\mathbf{X} = \mathbf{U}\boldsymbol{\Sigma}\mathbf{V}^T$ shows where this happens \cite[Secs.~1.22, 3.8]{HjorthJensen2026}. The columns $\mathbf{v}_i$ of $\mathbf{V}$ are an orthonormal basis for the parameter space, aligned with the axes of the elliptic contours of the cost. A step along $\mathbf{v}_i$ changes the prediction by $\sigma_i$ times the pattern $\mathbf{u}_i$, $\mathbf{X}\mathbf{v}_i = \sigma_i\mathbf{u}_i$, and the curvature of the cost along $\mathbf{v}_i$ is $(2/n)\sigma_i^2$. Nearly collinear columns give small $\sigma_i$, i.e.\ flat directions, and $\kappa(\mathbf{X}) = \sigma_{\max}/\sigma_{\min}$. In this basis
+$$
+\hat{\boldsymbol{\theta}}_{\mathrm{OLS}} = \sum_i \frac{\mathbf{u}_i^T\mathbf{y}}{\sigma_i}\,\mathbf{v}_i, \qquad
+\hat{\boldsymbol{\theta}}_{\mathrm{Ridge}} = \sum_i \frac{\sigma_i}{\sigma_i^2 + n\lambda}\,(\mathbf{u}_i^T\mathbf{y})\,\mathbf{v}_i .
+$$
+Here $\mathbf{u}_i^T\mathbf{y}$ is how much of the data lies in the pattern $\mathbf{u}_i$. OLS divides it by $\sigma_i$, so in a flat direction even a small amount of noise gives a large coefficient. Ridge adds $n\lambda$ to the curvature $\sigma_i^2$, which multiplies each term by the shrinkage factor
+$$
+\frac{\sigma_i^2}{\sigma_i^2 + n\lambda}.
+$$
+The factor is close to 1 where $\sigma_i^2 \gg n\lambda$, equal to $1/2$ where $\sigma_i^2 = n\lambda$, and close to 0 where $\sigma_i^2 \ll n\lambda$: the same penalty in every direction has the largest relative effect where the curvature was small.
+
+\subsection{The bias--variance decomposition}\label{sec:biasvar}
+
+Let $\tilde{y}$ be the prediction at a test point $x$ from a model fitted on a training set $\mathcal{L}$, and let $y = f(x) + \varepsilon$ be a new measurement at the same point, with noise $\varepsilon$ independent of $\mathcal{L}$. The expectation $\mathrm{E}$ below is taken over both sources of randomness: the noise in the test measurement and the training set, i.e.\ which points and which noise the model was fitted on. Adding and subtracting $f$ and $\mathrm{E}[\tilde{y}]$,
+$$
+y - \tilde{y} = \left(f - \mathrm{E}[\tilde{y}]\right) + \left(\mathrm{E}[\tilde{y}] - \tilde{y}\right) + \varepsilon .
+$$
+Squaring and taking the expectation gives three squared terms and three cross terms. The cross terms vanish: $\mathrm{E}\left[\mathrm{E}[\tilde{y}] - \tilde{y}\right] = 0$, $\mathrm{E}[\varepsilon] = 0$, and $\varepsilon$ is independent of $\tilde{y}$, so $\mathrm{E}\left[(\mathrm{E}[\tilde{y}] - \tilde{y})\,\varepsilon\right] = 0$. Averaging over the test points (the sample mean that the project text writes as $\mathrm{E}$) gives \cite[Eq.~2.52]{HjorthJensen2026}
+$$
+\mathrm{E}\left[(y - \tilde{y})^2\right] = \mathrm{Bias}^2[\tilde{y}] + \mathrm{var}[\tilde{y}] + \sigma^2 ,
+$$
+$$
+\mathrm{Bias}^2[\tilde{y}] = \mathrm{E}\left[(f - \mathrm{E}[\tilde{y}])^2\right], \qquad
+\mathrm{var}[\tilde{y}] = \mathrm{E}\left[(\tilde{y} - \mathrm{E}[\tilde{y}])^2\right].
+$$
+The bias is the systematic error of the average model: how far the prediction, averaged over training sets, is from the true function. It is large when the model class is too simple. The variance is how much the prediction changes from one training set to another, i.e.\ how sensitive the fit is to the particular sample. The last term is the noise in the test measurement, which no model can remove. Since $f$ is unknown in practice, the bias is measured with $y$ in place of $f$. Because $\mathrm{E}[(y - \mathrm{E}[\tilde{y}])^2] = (f - \mathrm{E}[\tilde{y}])^2 + \sigma^2$, the measured bias then absorbs the noise variance $\sigma^2$.
+
+\subsection{Resampling: bootstrap and cross-validation}\label{sec:resampling}
+
+The expectation over training sets requires many training sets, but we only have one. The bootstrap \cite[Sec.~2.11]{HjorthJensen2026} imitates new training sets by drawing $n_{\mathrm{train}}$ points with replacement from the training set. We kept the test set fixed, fitted the model (including the scaling) on $B = 100$ bootstrap samples, and stored the predictions on the test points in an $n_{\mathrm{test}} \times B$ array. The test error, $\mathrm{Bias}^2$ (with $y$ in place of $f$) and variance are then means over the test points of, respectively, the squared error over all samples, the squared deviation of the mean prediction from $y$, and the variance of the predictions; the identity error $=$ bias$^2$ $+$ variance holds exactly for these estimates. Since we know $f$, we also computed the bias against $f$. To reduce the noise from a single split, we repeated the analysis for 20 data sets (seeds 42--61) and report medians.
+
+In $k$-fold cross-validation \cite[Sec.~2.12]{HjorthJensen2026} the data are divided into $k$ folds; each fold is used once for validation while the model is fitted on the other $k-1$, and the $k$ validation MSEs are averaged. We used scikit-learn's \texttt{KFold} and \texttt{cross\_val\_score} with $k = 5$ and $k = 10$ on all $n$ points of each data set. Every step that learns from the data (the standardisation) sits in a scikit-learn \texttt{Pipeline} together with our own OLS/Ridge code, wrapped as a scikit-learn estimator, so that it is refitted on the training folds only. If the scaling were fitted on all data before splitting, the mean and standard deviation of the validation fold would enter the training, and the validation error would no longer be an error on unseen data. As a reference for both methods we computed the MSE the model fitted on the training set would get on new data, the mean of $(\tilde{y} - f)^2$ over a fine grid plus $\sigma^2$, which is possible only because $f$ is known.
+
+For the final comparison of OLS, Ridge and Lasso we split each of the 20 data sets 80/20, chose the degree (1--16) and $\lambda$ by 5-fold cross-validation on the 80 training points only, refitted the chosen model on all 80 points and evaluated it once on the 20 test points, which thus play no part in the choice. Ridge used $\lambda = 10^{-8}, 10^{-7}, \dots, 1$ and Lasso $\lambda = 10^{-6}, 10^{-5}, \dots, 10^{-1}$.
+
+\subsection{Gradient descent}\label{sec:gd}
+
+Plain gradient descent updates $\boldsymbol{\theta}_{k+1} = \boldsymbol{\theta}_k - \gamma \nabla C(\boldsymbol{\theta}_k)$ with a fixed learning rate $\gamma$ \cite[Secs.~4.3--4.5]{HjorthJensen2026}. The gradient is
+$$
+\nabla C = \frac{2}{n}\mathbf{X}^T(\mathbf{X}\boldsymbol{\theta} - \mathbf{y}) + 2\lambda\boldsymbol{\theta},
+$$
+with $\lambda = 0$ for OLS, and the Hessian $\mathbf{H} = \frac{2}{n}\mathbf{X}^T\mathbf{X} + 2\lambda\mathbf{I}$ is constant. We write its eigenvalues (the curvatures) as $\mu_i$, to keep them apart from the penalty $\lambda$. Along each eigenvector of $\mathbf{H}$ the distance to the minimum is multiplied by $1 - \gamma\mu_i$ per step. The iteration therefore converges only if $\gamma < \gamma_{\max} = 2/\mu_{\max}$, and the number of iterations is set by the slowest mode, $\max_i |1 - \gamma\mu_i|$, which for $\gamma$ below the optimum $\gamma^* = 2/(\mu_{\max} + \mu_{\min})$ is the flattest direction. The number of iterations thus grows with the condition number $\kappa = \mu_{\max}/\mu_{\min}$ of the Hessian, which for OLS is the square of the condition number of $\mathbf{X}$. Ridge, which adds $2\lambda$ to every eigenvalue, lowers $\kappa$.
+
+We computed the gradient in two independent ways: from the expression above, and by automatic differentiation with \texttt{jax.grad} \cite{Jax2018} applied to the cost written as an ordinary Python function. Automatic differentiation is neither symbolic nor numerical differentiation. It does not build a formula for the derivative, and it uses no step length $h$ and no approximation; it applies the chain rule, with the exact derivatives of the elementary operations, to the numbers computed when the program runs, and reuses those intermediate values \cite[Sec.~4.14]{HjorthJensen2026}. In reverse mode, which \texttt{jax.grad} uses, one backward pass gives the derivative with respect to all parameters, at a cost of a small multiple of one evaluation of the cost function, independent of the number of parameters.
+
+The gradient methods were tested on one fixed problem: seed 42, $n = 100$, degree 6, standardised columns, started from $\boldsymbol{\theta} = 0$ and compared with the closed-form solutions. For Ridge we used $\lambda = 10^{-2}$. This value was chosen to make the effect of the penalty on the optimisation visible, since $2\lambda$ is then larger than the smallest eigenvalue of the OLS Hessian; it is not a good choice for prediction (Sec.~\ref{sec:res_lasso}).
+
+\subsection{Momentum and adaptive learning rates}\label{sec:adaptive}
+
+The update rules were implemented as one function acting on a given gradient \cite[Secs.~4.6, 4.8--4.11]{HjorthJensen2026}. Momentum adds a memory of previous steps, $\mathbf{v}_k = \beta\mathbf{v}_{k-1} + \gamma\nabla C$, $\boldsymbol{\theta}_{k+1} = \boldsymbol{\theta}_k - \mathbf{v}_k$ ($\beta = 0.9$): the steps along the flat valley floor add up, while the oscillations across the valley partly cancel. AdaGrad, RMSProp and Adam give each coefficient its own step length by dividing by the square root of an accumulated squared gradient: the sum of all previous $g_j^2$ (AdaGrad), a running average with $\rho = 0.99$ (RMSProp), or, in Adam \cite{Kingma2015}, a running average ($\beta_2 = 0.999$) combined with a momentum-like running average of the gradient ($\beta_1 = 0.9$) and a bias correction for the first steps. They approximate the diagonal of the Hessian from the gradient history, so they compensate for different curvature along the coordinate axes, but not for curvature along directions that are rotated relative to the axes, as the flat directions of collinear columns are.
+
+\subsection{Lasso}\label{sec:lasso}
+
+The Lasso cost $C(\boldsymbol{\theta}) = \frac{1}{n}\lVert\mathbf{y} - \mathbf{X}\boldsymbol{\theta}\rVert^2 + \lambda\lVert\boldsymbol{\theta}\rVert_1$ has no closed-form minimum, and $|\theta_j|$ is not differentiable at $\theta_j = 0$ \cite{Tibshirani1996}. At a kink any slope between $-1$ and $1$ is a valid subgradient. The analytic subgradient uses $\mathrm{sign}(\theta_j)$ with $\mathrm{sign}(0) = 0$, while \texttt{jax.grad} returns the derivative of the branch the program takes, $1$ at $0$; both are valid. We minimised the Lasso cost with plain gradient descent and Adam using the JAX gradient, and compared with scikit-learn's \texttt{Lasso} (coordinate descent), whose cost $\frac{1}{2n}\lVert\cdot\rVert^2 + \alpha\lVert\boldsymbol{\theta}\rVert_1$ corresponds to $\alpha = \lambda/2$. Coefficients that scikit-learn sets to zero were checked with the optimality condition $|\frac{2}{n}\mathbf{x}_j^T\mathbf{r}| \le \lambda$, where $\mathbf{r}$ is the residual. The convergence of scikit-learn's solver was checked with its duality gap, an upper bound on how far the cost of the returned solution lies above the Lasso minimum.
+
+\subsection{Stochastic gradient descent}\label{sec:sgd}
+
+In stochastic gradient descent \cite[Sec.~4.7]{HjorthJensen2026} the gradient is computed on a minibatch of $M$ rows. In each epoch the rows are shuffled once and gone through in batches, so an epoch has $n/M$ updates and costs about as much as one full gradient. The minibatch gradient is unbiased but noisy, and with a constant learning rate the iterate ends up fluctuating around the minimum; a decaying schedule $\gamma_t = t_0/(t + t_1)$, with $t$ the number of updates, reduces the fluctuations. Stability is now needed for each minibatch: for $M = 1$ the curvature of a single term is $2\lVert\mathbf{x}_i\rVert^2$. We used the same update rules as for full-batch gradient descent and measure the cost in epochs (passes through the training data).
+
+\subsection{Scaling and centering}\label{sec:scaling}
+
+Each column of $\mathbf{X}$ was standardised with the mean $\bar{x}_j$ and standard deviation $s_j$ of the training data, and $\mathbf{y}$ was centred with the training mean $\bar{y}$. The test data were transformed with the same training statistics. Without a column of ones there is no intercept to fit. Written with the original columns, the intercept is recovered as
+$$
+\theta_0 = \bar{y} - \sum_{j=1}^{d} \bar{x}_j\,\theta_j, \qquad \theta_j = \theta_j^{\mathrm{std}}/s_j ,
+$$
+where $\theta_j^{\mathrm{std}}$ are the coefficients on the standardised columns.
+
+We scaled for two reasons. First, all methods should see the same data, so that OLS can serve as the benchmark for Ridge, Lasso and gradient descent. Second, the Ridge penalty acts equally on all coefficients. Without standardisation a column with small values needs a large coefficient and would be penalised hardest because of its units, not because it matters less; and the intercept, which only sets the level of $y$, should not be penalised at all. For OLS alone the scaling is not needed (Sec.~\ref{sec:res_scaling}).
+
+\subsection{Repeated experiments}\label{sec:repeated}
+
+With $n = 100$ the test set has only 20 points, and a single split gives noisy test errors. We therefore repeated every experiment with 200 seeds (Algorithm~\ref{alg:repeated}) and report the median and the interquartile range (25th to 75th percentile) over the repetitions. We use the median rather than the mean because a few repetitions give extreme errors at high degree (Sec.~\ref{sec:res_extreme}). The first repetition, seed 42, is also shown on its own as an example of a single experiment.
+
+\begin{algorithm}
+\caption{Repeated experiments}\label{alg:repeated}
+\For{seed $s = 42, 43, \dots, 241$}{
+    draw $x_i \sim U[-1,1]$, $y_i = f(x_i) + \varepsilon_i$ with seed $s$\;
+    split 80/20 into training and test data with seed $s$\;
+    \For{each degree $d$ and each penalty $\lambda$}{
+        build $\mathbf{X}$; standardise with training statistics\;
+        fit $\hat{\boldsymbol{\theta}}$ (OLS if $\lambda = 0$, else Ridge)\;
+        store training and test MSE and $R^2$\;
+    }
+}
+report median and interquartile range over $s$\;
+\end{algorithm}
+
+\subsection{Implementation and validation}\label{sec:validation}
+
+Shared functions (data, design matrix, scaling, OLS, Ridge, bootstrap, error measures, and the scikit-learn wrapper) are in \texttt{common.py}; the gradients, update rules, gradient descent and SGD are in \texttt{optim.py}; each part of the project is a function in \texttt{main.py}, and \texttt{tests.py} contains the unit tests. Table~\ref{tab:validation} lists the checks. The agreement with scikit-learn for Ridge degrades as $\lambda$ decreases, in line with the growing condition number of $\mathbf{X}^T\mathbf{X} + n\lambda\mathbf{I}$.
+
+\begin{table}
+    \centering
+    \caption{Validation of the code (degree 5 for OLS, degree 15 for Ridge, seed 42). Differences are the largest absolute difference in the coefficients or predictions.}
+    \label{tab:validation}
+    \begin{tabular}{lc}
+        \toprule
+        Check & Difference \\
+        \midrule
+        OLS vs.\ scikit-learn \texttt{LinearRegression} & $4\times10^{-16}$ \\
+        Ridge vs.\ scikit-learn \texttt{Ridge}, $\lambda = 10^{-2}$ & $7\times10^{-15}$ \\
+        Ridge vs.\ scikit-learn \texttt{Ridge}, $\lambda = 10^{-6}$ & $1\times10^{-9}$ \\
+        Ridge vs.\ SVD form, $\lambda = 10^{-6}$ & $3\times10^{-9}$ \\
+        OLS predictions, scaled vs.\ unscaled (degree 15) & $7\times10^{-13}$ \\
+        Ridge with $\lambda = 0$ vs.\ OLS & exact \\
+        Bootstrap: error $-$ bias$^2$ $-$ variance (relative) & $1\times10^{-15}$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+In addition, \texttt{tests.py} checks that a noise-free polynomial is recovered exactly including the intercept, that the scaling uses training statistics only, the limits $R^2 = 1$ and $R^2 = 0$, that a seed reproduces the same split, and that the norm of the Ridge coefficients decreases monotonically towards zero as $\lambda$ grows. For \texttt{optim.py} it checks that the analytic gradients equal the JAX gradients, that plain gradient descent, momentum and Adam reach the closed-form OLS and Ridge solutions and that plain gradient descent diverges above $\gamma_{\max}$, that SGD with one batch of all rows takes the same steps as plain gradient descent, and that subgradient descent for Lasso reaches scikit-learn's solution:
+\begin{lstlisting}[style=terminal]
+PASS  test_ols_against_sklearn
+PASS  test_exact_polynomial
+PASS  test_scaling_invariance_ols
+PASS  test_scaler_uses_training_statistics
+PASS  test_r2_limits
+PASS  test_reproducible_split
+PASS  test_ridge_against_sklearn
+PASS  test_ridge_svd_form
+PASS  test_ridge_limits
+PASS  test_gradients_against_jax
+PASS  test_gradient_descent_closed_form
+PASS  test_sgd_full_batch_is_gd
+PASS  test_lasso_gd_against_sklearn
+
+All 13 tests passed.
+\end{lstlisting}

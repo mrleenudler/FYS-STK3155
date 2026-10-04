@@ -1,0 +1,50 @@
+========================================================================
+Part e) Gradient descent with a fixed learning rate
+========================================================================
+Degree 6, seed 42, 80 training points, Ridge lambda = 0.01
+
+Analytic gradient vs. jax.grad, max |difference|
+    OLS, random theta: 2.2e-16
+    OLS, theta = 0   : 1.1e-16
+  Ridge, random theta: 2.2e-16
+  Ridge, theta = 0   : 1.1e-16
+
+Timing on a 100000 x 50 problem (jit, best of 5 blocks of 100 calls): cost 2.14 ms, gradient (reverse mode) 5.50 ms, ratio 2.57
+
+OLS: Hessian eigenvalues 3.377e-03 ... 7.632, kappa = 2.260e+03
+  gamma_max = 2/mu_max = 0.2621, gamma* = 2/(mu_max + mu_min) = 0.2619
+  stop when ||theta - theta_hat|| < 1e-06; start theta = 0, ||theta_hat|| = 3.070
+  gamma/gamma_max  iterations  predicted     status
+            0.050      336841     337550  converged
+            0.100      168417     168771  converged
+            0.200       84205      84382  converged
+            0.300       56134      56252  converged
+            0.500       33678      33748  converged
+            0.700       24054      24104  converged
+            0.900       18707      18746  converged
+            0.990       17006      17041  converged
+   1.000 (gamma*)       16843      16878  converged
+            1.010        1107        inf   diverged
+            1.050         230        inf   diverged
+  at 0.99 gamma_max: test MSE GD 1.575148e-02, closed form 1.575148e-02
+  2000 GD iterations with JAX vs analytic gradient: max |theta difference| = 4.0e-15
+
+Ridge: Hessian eigenvalues 2.338e-02 ... 7.652, kappa = 3.273e+02
+  gamma_max = 2/mu_max = 0.2614, gamma* = 2/(mu_max + mu_min) = 0.2606
+  stop when ||theta - theta_hat|| < 1e-06; start theta = 0, ||theta_hat|| = 0.694
+  gamma/gamma_max  iterations  predicted     status
+            0.050       42451      44020  converged
+            0.100       21223      22007  converged
+            0.200       10608      11000  converged
+            0.300        7070       7331  converged
+            0.500        4240       4396  converged
+            0.700        3027       3138  converged
+            0.900        2353       2439  converged
+            0.990        2138       2217  converged
+   0.997 (gamma*)        2126       2201  converged
+            1.010        1107        inf   diverged
+            1.050         230        inf   diverged
+  at 0.99 gamma_max: test MSE GD 2.443487e-02, closed form 2.443486e-02
+  2000 GD iterations with JAX vs analytic gradient: max |theta difference| = 1.7e-16
+
+Figures saved in figures/

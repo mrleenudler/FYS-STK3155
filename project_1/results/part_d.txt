@@ -1,0 +1,37 @@
+========================================================================
+Part d) Cross-validation
+========================================================================
+n = 100, sigma = 0.1, 20 data sets. CV uses all n points; the bootstrap and the reference use the 80/20 split of part c.
+Preprocessing (design matrix, standardisation) is refitted inside every training fold (Pipeline).
+
+OLS, median over data sets
+degree      CV k=5     CV k=10   bootstrap    new data
+     1   9.795e-02   9.634e-02   9.453e-02   9.229e-02
+     2   5.099e-02   5.032e-02   4.696e-02   4.855e-02
+     3   5.185e-02   5.170e-02   5.102e-02   4.928e-02
+     4   3.011e-02   2.968e-02   3.190e-02   2.799e-02
+     5   3.134e-02   3.052e-02   3.543e-02   2.888e-02
+     6   2.095e-02   2.095e-02   2.157e-02   1.927e-02
+     7   2.165e-02   2.115e-02   2.189e-02   1.967e-02
+     8   1.651e-02   1.618e-02   1.919e-02   1.473e-02
+     9   1.704e-02   1.669e-02   2.369e-02   1.508e-02
+    10   1.444e-02   1.420e-02   2.395e-02   1.331e-02
+    11   1.401e-02   1.449e-02   3.539e-02   1.343e-02
+    12   1.500e-02   1.448e-02   6.273e-02   1.294e-02
+    13   1.654e-02   1.526e-02   1.234e-01   1.349e-02
+    14   1.588e-02   1.411e-02   3.269e-01   1.388e-02
+    15   1.781e-02   1.564e-02   2.157e+00   1.427e-02
+    16   1.675e-02   1.751e-02   2.564e+00   1.482e-02
+      CV k=5: lowest at degree 11 (1.401e-02)
+     CV k=10: lowest at degree 14 (1.411e-02)
+   bootstrap: lowest at degree 8 (1.919e-02)
+    new data: lowest at degree 12 (1.294e-02)
+
+Ridge, CV with k = 5, median over data sets
+  lowest: degree 11, lambda = 3e-08, CV MSE 1.393e-02
+  OLS (k = 5) lowest: degree 11, 1.401e-02
+  degree  5: best lambda 3e-03 (3.070e-02); OLS 3.134e-02
+  degree 10: best lambda 1e-08 (1.445e-02); OLS 1.444e-02
+  degree 15: best lambda 3e-07 (1.477e-02); OLS 1.781e-02
+
+Figures saved in figures/
