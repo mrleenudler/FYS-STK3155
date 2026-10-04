@@ -4,7 +4,7 @@ OLS, Ridge and Lasso regression on noisy samples of Runge's function
 f(x) = 1/(1 + 25x²), x ∈ [−1, 1], with bootstrap, k-fold cross-validation and
 gradient descent (plain, momentum, AdaGrad, RMSProp, Adam, SGD).
 
-Author: andreand. The report is `report/main.pdf`.
+Authors: andreand, suadrn. The report is `report/main.pdf`.
 
 ## Files
 
