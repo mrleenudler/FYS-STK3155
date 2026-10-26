@@ -1,0 +1,14 @@
+% =====================================================================
+% INTRODUCTION
+% LLM declaration: text level 3; see the appendix "Use of AI/LLM tools".
+% =====================================================================
+
+\section*{Introduction}
+
+In Project 1 we fitted polynomials to noisy samples of Runge's function, $f(x) = 1/(1 + 25x^2)$ \cite{Runge1901}. The features, the powers $x, x^2, \dots, x^d$, were chosen by us, and the best degree had to be found by testing. A neural network takes the raw input and learns its own features in the hidden layers. The universal approximation theorem says that one hidden layer with enough nodes can approximate any continuous function on a bounded interval as well as we want \cite[Sec.~8.4]{HjorthJensen2026}, but not how to find the weights, or how much data that takes.
+
+We wrote our own feed-forward neural network (FFNN) with backpropagation. It has a flexible number of layers and nodes, a choice of activation function in each layer (sigmoid, ReLU, Leaky ReLU, linear and softmax), the mean squared error or the cross entropy as cost function, and optional $L_1$ or $L_2$ penalties on the weights. It is trained with the gradient-descent code from Project 1: plain gradient descent, and stochastic gradient descent with RMSprop or Adam.
+
+For regression we used the data sets of Runge's function from Project 1, and compared with the OLS, Ridge and Lasso results there. For classification we used the MNIST data set of handwritten digits \cite{LeCun2010MNIST}, and compared with logistic regression, which is our network without hidden layers, and with scikit-learn \cite{Pedregosa2011}.
+
+The Methods section describes the cost functions and their gradients (part a of the project), the network, backpropagation, the initialisation, the optimisers, the data and how we tested the code. The Results and discussion section follows parts b--e, the Critical evaluation section compares the methods (part f), and the Conclusion sums up. We used NumPy \cite{Harris2020}, JAX \cite{Jax2018} to check our gradients, scikit-learn for splitting data and as a reference, and Matplotlib \cite{Hunter2007} for the figures. The code, the logged output and the figures are on GitHub\footnote{\url{https://github.com/mrleenudler/FYS-STK3155/tree/main/project_2}}.

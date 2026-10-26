@@ -1,0 +1,76 @@
+========================================================================
+Part c) Activation functions, depth and width
+========================================================================
+Runge data as in part b (64 training / 16 validation points), SGD + Adam, gamma = 0.001, minibatch 16, 1000 epochs.
+Weights ~ N(0, 1/n_in) for sigmoid and N(0, 2/n_in) for ReLU and Leaky ReLU (He), biases 0.01.
+(grid read from results/part_c_grid.npz; delete the file to recompute)
+
+Median validation MSE over seeds 42-44 (rows: hidden layers, columns: nodes per layer)
+OLS degree 12 on the same data: median validation MSE 1.191e-02
+  Sigmoid
+  layers           5         10         25         50        100
+       1   2.217e-02  2.294e-02  2.331e-02  2.089e-02  1.653e-02
+       2   1.803e-02  1.640e-02  1.699e-02  1.406e-02  1.448e-02
+       3   1.993e-02  1.563e-02  1.261e-02  1.306e-02  1.316e-02
+       5   6.804e-02  1.251e-02  1.350e-02  1.260e-02  1.272e-02
+  best: 5 layer(s) of 10 nodes, 1.251e-02
+  ReLU
+  layers           5         10         25         50        100
+       1   1.513e-02  2.218e-02  1.277e-02  1.286e-02  1.283e-02
+       2   1.246e-02  1.239e-02  1.413e-02  1.252e-02  1.354e-02
+       3   1.291e-02  1.415e-02  1.427e-02  1.398e-02  1.468e-02
+       5   1.549e-02  1.390e-02  1.616e-02  1.650e-02  1.634e-02
+  best: 2 layer(s) of 10 nodes, 1.239e-02
+  Leaky ReLU
+  layers           5         10         25         50        100
+       1   1.523e-02  2.217e-02  1.279e-02  1.291e-02  1.276e-02
+       2   2.073e-02  1.233e-02  1.298e-02  1.255e-02  1.342e-02
+       3   1.196e-02  1.369e-02  1.308e-02  1.322e-02  1.369e-02
+       5   1.379e-02  1.302e-02  1.507e-02  1.561e-02  1.606e-02
+  best: 3 layer(s) of 5 nodes, 1.196e-02
+
+Median training MSE over seeds 42-44 (same runs)
+  Sigmoid
+  layers           5         10         25         50        100
+       1   1.762e-02  1.859e-02  1.930e-02  1.695e-02  1.299e-02
+       2   1.363e-02  1.456e-02  1.215e-02  9.505e-03  9.006e-03
+       3   1.811e-02  9.961e-03  8.961e-03  9.226e-03  9.306e-03
+       5   7.242e-02  9.736e-03  8.397e-03  8.500e-03  8.871e-03
+  ReLU
+  layers           5         10         25         50        100
+       1   1.805e-02  2.007e-02  1.648e-02  9.427e-03  9.604e-03
+       2   8.411e-03  7.774e-03  8.006e-03  8.814e-03  1.058e-02
+       3   8.700e-03  7.270e-03  8.048e-03  7.439e-03  7.834e-03
+       5   7.387e-03  8.346e-03  7.171e-03  7.369e-03  7.541e-03
+  Leaky ReLU
+  layers           5         10         25         50        100
+       1   1.808e-02  2.009e-02  1.647e-02  9.484e-03  9.725e-03
+       2   1.711e-02  7.775e-03  7.657e-03  9.138e-03  1.036e-02
+       3   8.312e-03  7.651e-03  7.688e-03  7.527e-03  7.324e-03
+       5   7.301e-03  8.331e-03  6.911e-03  7.339e-03  7.549e-03
+
+Training | validation MSE against depth, 50 nodes per layer (medians)
+layers  parameters                 Sigmoid                    ReLU              Leaky ReLU
+     1         151   1.70e-02 | 2.09e-02   9.43e-03 | 1.29e-02   9.48e-03 | 1.29e-02
+     2        2701   9.51e-03 | 1.41e-02   8.81e-03 | 1.25e-02   9.14e-03 | 1.25e-02
+     3        5251   9.23e-03 | 1.31e-02   7.44e-03 | 1.40e-02   7.53e-03 | 1.32e-02
+     5       10351   8.50e-03 | 1.26e-02   7.37e-03 | 1.65e-02   7.34e-03 | 1.56e-02
+
+RMS of dC/dW over the weights of each layer, five hidden layers of 50 nodes (layer 1 = first hidden, 6 = output)
+  Sigmoid     at initialisation : 1.0e-05  3.7e-04  1.5e-03  7.3e-03  3.3e-02  7.9e-01   (first / output: 1.3e-05)
+  Sigmoid     after 100 epochs  : 1.3e-04  3.7e-05  5.7e-05  1.3e-04  3.9e-04  8.5e-03   (first / output: 1.6e-02)
+  ReLU        at initialisation : 1.8e-01  1.1e-01  1.0e-01  1.0e-01  1.1e-01  7.2e-01   (first / output: 2.5e-01)
+  ReLU        after 100 epochs  : 3.2e-03  2.0e-03  1.7e-03  1.8e-03  2.4e-03  2.1e-02   (first / output: 1.5e-01)
+  Leaky ReLU  at initialisation : 1.7e-01  1.1e-01  1.0e-01  1.1e-01  1.1e-01  7.4e-01   (first / output: 2.3e-01)
+  Leaky ReLU  after 100 epochs  : 2.5e-03  1.7e-03  1.5e-03  1.8e-03  2.1e-03  1.9e-02   (first / output: 1.3e-01)
+
+Standard error of a validation MSE on 16 points: std(squared errors) / sqrt(16)
+  seed 42:  OLS degree 12: 1.12e-02 +- 3.7e-03 (33 %)   ReLU 2 x 10: 1.24e-02 +- 3.9e-03 (32 %)
+  seed 43:  OLS degree 12: 1.99e-02 +- 6.3e-03 (31 %)   ReLU 2 x 10: 1.36e-02 +- 4.7e-03 (34 %)
+  seed 44:  OLS degree 12: 1.19e-02 +- 2.8e-03 (24 %)   ReLU 2 x 10: 1.13e-02 +- 2.0e-03 (18 %)
+
+Sigmoid, five hidden layers of 50 nodes, trained longer (median over seeds, train | validation MSE)
+   1000 epochs: 8.50e-03 | 1.26e-02
+   5000 epochs: 7.76e-03 | 1.44e-02
+
+Figures saved in figures/

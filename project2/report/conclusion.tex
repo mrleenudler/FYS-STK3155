@@ -1,0 +1,10 @@
+% =====================================================================
+% CONCLUSION
+% LLM declaration: text level 3; see the appendix "Use of AI/LLM tools".
+% =====================================================================
+
+\section*{Conclusion}
+
+We wrote a feed-forward neural network with backpropagation and checked it against automatic differentiation and the closed-form OLS solution. On Runge's function, one hidden layer of 50 sigmoid nodes was not better than OLS of degree 12, with a median test MSE over ten data sets of 0.0132 against 0.0122. A ReLU network with three hidden layers of 50 nodes, trained with Adam and a small learning rate, reached 0.0093 on the 20 data sets of Project 1, against 0.0133 for Ridge and close to the noise level of 0.0091, mainly by doing better near the edges. The ReLU networks overfitted with depth and the sigmoid networks with more epochs; the sigmoid gradients vanish towards the input by a factor of about 4--5 per layer. The $L_1$ and $L_2$ penalties gave no measurable improvement, since the small learning rate and the fixed number of epochs already prevented overfitting. RMSprop and Adam needed a learning rate 100 times smaller than plain gradient descent and reached low errors in fewer epochs. On MNIST, one hidden layer of 200 ReLU nodes gave a test accuracy of 97.8\,\%, against 92.7\,\% for logistic regression, and most of the remaining errors were between digits that can look alike, such as 4 and 9.
+
+The Runge validation and test sets are small, so most differences between architectures and penalties are within the uncertainty. We used a fixed number of epochs, coarse grids and, on MNIST, single runs, whose accuracy varied by up to almost one percentage point between epochs. Cross-validation, early stopping on the validation set and averages over several runs would make the comparisons more reliable.

@@ -1,0 +1,47 @@
+% =====================================================================
+% APPENDIX: declaration of AI/LLM use
+% =====================================================================
+
+\appendix
+
+\section*{Appendix: Use of AI/LLM tools}
+
+\paragraph*{Tools used.} Claude (Opus 5.5), used through claude.ai with its code-execution workspace, October 2026. Claude was also used as a tutor for the theory and for the weekly exercises of weeks 41--43; the understanding this gave is not declared separately.
+
+\paragraph*{Text.} Contribution levels as defined in the course guidelines.
+
+\begin{center}
+    \begin{tabular}{lc}
+        \toprule
+        Section & Level \\
+        \midrule
+        Abstract & 3 \\
+        Introduction & 3 \\
+        Methods & 3 \\
+        Results and discussion & 3 \\
+        Critical evaluation & 3 \\
+        Conclusion & 3 \\
+        Appendix (this declaration) & 3 \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+\emph{Level 3 note.} All sections were drafted by Claude from our dialogue during the project. For each part we first gave our own answers to the questions in the project text and our own reading of the figures and the logged output, and Claude corrected them. The prompt for the draft was to write the report from this dialogue, to include only what we had shown that we understand, and to take every number from the logged output of the code; Claude then checked the numbers in the text against the logs. \textcolor{red}{[To be completed after revision: the main changes we made to the draft.]}
+
+\paragraph*{Code.} Contribution levels as defined in the course guidelines. Every file has an \texttt{LLM-assisted} note at the top that covers all its functions, and the larger functions carry a short tag that refers to it.
+
+\begin{center}
+    \begin{tabular}{lcp{0.62\linewidth}}
+        \toprule
+        File & Level & Description \\
+        \midrule
+        \texttt{nn.py} & 4 & Activations, costs, the network class and the training loop, written by Claude. The backpropagation (\texttt{compute\_gradient}) is our own batched backpropagation from the week 42 exercises, moved into the class by Claude, who added the output error for the cross entropies and the penalty terms. \\
+        \texttt{main.py} & 4 & One function per project part, the figures and the logged output, written by Claude from the experiments we agreed on, including the two illustrations (Figs.~\ref{fig:hinges} and \ref{fig:weights}), which we asked for. \\
+        \texttt{tests.py} & 4 & The two tests, written by Claude; the checks are the ones the project text asks for. \\
+        \texttt{optim.py} & 4 & Update rules from Project 1, unchanged. \\
+        \texttt{common.py} & 4 & Data, design matrix, scaling and OLS from Project 1, unchanged. \\
+        \bottomrule
+    \end{tabular}
+\end{center}
+
+The results in this report were produced by running the code in Claude's code-execution workspace. The choices behind the experiments (data sets, seeds, validation split, grids and what to compare with) were discussed and agreed on before the code was written.

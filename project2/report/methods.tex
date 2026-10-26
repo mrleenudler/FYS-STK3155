@@ -1,0 +1,173 @@
+% =====================================================================
+% METHODS
+% LLM declaration: text level 3; see the appendix "Use of AI/LLM tools".
+% =====================================================================
+
+\section*{Methods}
+
+\subsection*{Data}
+
+\emph{Runge's function.} As in Project 1, $x$ was drawn uniformly from $[-1, 1]$ and $y_i = f(x_i) + \varepsilon_i$ with $\varepsilon_i \sim \mathcal{N}(0, \sigma^2)$, $n = 100$ and $\sigma = 0.1$. One seed fixes the data and the 80/20 split into training and test points, with the code from Project 1, so seed 42 gives the same data set as there. To choose the hyperparameters we split the 80 training points into 64 for training and 16 for validation, and the test points were used only for the final comparisons. The input to the network is $x$ alone, standardised with the mean and standard deviation of the training points. The targets were not scaled, since the output layer has a bias.
+
+\emph{MNIST.} The data set has $70\,000$ grey-scale images of $28 \times 28$ pixels, with a canonical split into $60\,000$ training and $10\,000$ test images \cite{LeCun2010MNIST}. We drew $10\,000$ of the training images at random (seed 2026) as a validation set for all choices of hyperparameters, trained on the other $50\,000$, and used the test set once, at the end. The images were flattened to 784 pixel values, which were divided by 255 so that they lie in $[0, 1]$, and the targets are one-hot vectors with ten components.
+
+\subsection*{The network}
+
+As in the lecture notes \cite[Sec.~8.5]{HjorthJensen2026} and the exercises of weeks 41 and 42, the samples are the rows of the input $\mathbf{X}$, and layer $l$ has a weight matrix $\mathbf{W}^l$ of shape (inputs, outputs) and a bias vector $\mathbf{b}^l$. The feed-forward pass is
+$$
+\mathbf{z}^l = \mathbf{a}^{l-1}\mathbf{W}^l + \mathbf{b}^l, \qquad \mathbf{a}^l = f^l(\mathbf{z}^l), \qquad l = 1, \dots, L,
+$$
+with $\mathbf{a}^0 = \mathbf{X}$. Here $\mathbf{z}^l$ and $\mathbf{a}^l$ have one row per sample, the bias is added to every row, and the activation function $f^l$ acts on each element (the softmax on each row).
+
+\subsection*{Cost functions and their gradients}
+
+\emph{Mean squared error.} For the regression, with one output node, we used the cost from Project 1,
+$$
+C_{\mathrm{MSE}} = \frac{1}{n}\sum_{i=1}^{n}(a_i - y_i)^2, \qquad \frac{\partial C_{\mathrm{MSE}}}{\partial a_i} = \frac{2}{n}(a_i - y_i),
+$$
+where $a_i$ is the output for sample $i$ and $y_i$ the target.
+
+\emph{Binary cross entropy.} For two classes the output is one sigmoid node, $a_i = \sigma(z_i)$, the probability that $y_i = 1$, and
+$$
+C_{\mathrm{BCE}} = -\frac{1}{n}\sum_{i=1}^{n}\left[y_i\ln a_i + (1 - y_i)\ln(1 - a_i)\right].
+$$
+For $y_i = 1$ only the first term counts, and $-\ln a_i$ grows without limit as $a_i \to 0$, so a confident wrong answer costs a lot; the second term does the same for $y_i = 0$. The cost is the negative log-likelihood of the targets \cite[Sec.~5.3]{HjorthJensen2026}. Its derivative is
+$$
+\frac{\partial C_{\mathrm{BCE}}}{\partial a_i} = \frac{1}{n}\left(-\frac{y_i}{a_i} + \frac{1 - y_i}{1 - a_i}\right) = \frac{1}{n}\,\frac{a_i - y_i}{a_i(1 - a_i)},
+$$
+and since $\sigma'(z) = \sigma(z)\left(1 - \sigma(z)\right) = a(1 - a)$,
+$$
+\frac{\partial C_{\mathrm{BCE}}}{\partial z_i} = \frac{1}{n}(a_i - y_i).
+$$
+
+\emph{Multiclass cross entropy.} For $K$ classes the output layer has $K$ softmax nodes, and the targets are one-hot, $y_{ik} = 1$ for the correct class and 0 for the others \cite[Sec.~5.6]{HjorthJensen2026}:
+$$
+a_{ik} = \frac{e^{z_{ik}}}{\sum_{j=1}^{K} e^{z_{ij}}}, \qquad C_{\mathrm{CE}} = -\frac{1}{n}\sum_{i=1}^{n}\sum_{k=1}^{K} y_{ik}\ln a_{ik}.
+$$
+The softmax gives positive outputs that sum to one, and the cost is the average of $-\ln$ of the probability given to the correct class. Since
+$$
+\ln a_{ik} = z_{ik} - \ln\sum_{j=1}^{K} e^{z_{ij}},
+$$
+the derivative is
+$$
+\frac{\partial C_{\mathrm{CE}}}{\partial z_{ik}} = \frac{1}{n}\left(-y_{ik} + a_{ik}\sum_{m=1}^{K} y_{im}\right) = \frac{1}{n}(a_{ik} - y_{ik}),
+$$
+since the one-hot targets of a sample sum to one.
+
+\emph{Matched pairs.} The linear output with the MSE, the sigmoid with the binary cross entropy and the softmax with the cross entropy thus give the same form of output error,
+$$
+\boldsymbol{\delta}^L = \frac{\partial C}{\partial \mathbf{z}^L} = c\,(\mathbf{a}^L - \mathbf{y}),
+$$
+with $c = 2/n$ for the MSE and $c = 1/n$ for the cross entropies. With a mixed pair, for instance a sigmoid output with the MSE, the factor $\sigma'(z^L)$ stays in $\boldsymbol{\delta}^L$. It is close to zero when the output saturates, also when the output is confidently wrong, so the network learns slowly exactly where it should learn the most.
+
+\emph{Penalties.} With an $L_2$ or an $L_1$ penalty the cost becomes
+$$
+C = C_{\mathrm{data}} + \lambda\sum_{l}\sum_{j,k}\left(w^l_{jk}\right)^2 \qquad (L_2),
+$$
+$$
+C = C_{\mathrm{data}} + \lambda\sum_{l}\sum_{j,k}\left|w^l_{jk}\right| \qquad (L_1),
+$$
+where $C_{\mathrm{data}}$ is one of the three costs above and the sums go over all weights in all layers. The penalty pulls the weights towards zero, and $\lambda \ge 0$ sets how hard. As for the intercept in Project 1, the biases are not penalised \cite[Sec.~8.12]{HjorthJensen2026}. The penalty depends on the weights directly and not through $\mathbf{z}^l$, so $\boldsymbol{\delta}^l$ is unchanged, and the weight gradient just gets an extra term,
+$$
+\frac{\partial C}{\partial \mathbf{W}^l} = \frac{\partial C_{\mathrm{data}}}{\partial \mathbf{W}^l} + 2\lambda\mathbf{W}^l \qquad (L_2),
+$$
+$$
+\frac{\partial C}{\partial \mathbf{W}^l} = \frac{\partial C_{\mathrm{data}}}{\partial \mathbf{W}^l} + \lambda\,\mathrm{sign}(\mathbf{W}^l) \qquad (L_1),
+$$
+for all three costs. The absolute value has no derivative at zero, and as in Project 1 we used the subgradient with $\mathrm{sign}(0) = 0$. For the results we used the MSE and the multiclass cross entropy; the binary cross entropy is implemented and tested, but not used.
+
+\subsection*{Activation functions}
+
+For the hidden layers we used \cite[Sec.~8.6]{HjorthJensen2026}
+$$
+\sigma(z) = \frac{1}{1 + e^{-z}}, \qquad \sigma'(z) = \sigma(z)\left(1 - \sigma(z)\right),
+$$
+$$
+\mathrm{ReLU}(z) = \max(0, z), \qquad \mathrm{ReLU}'(z) = \begin{cases} 1, & z > 0, \\ 0, & z \le 0, \end{cases}
+$$
+$$
+\mathrm{LReLU}(z) = \begin{cases} z, & z > 0, \\ \alpha z, & z \le 0, \end{cases} \quad\; \mathrm{LReLU}'(z) = \begin{cases} 1, & z > 0, \\ \alpha, & z \le 0, \end{cases}
+$$
+with $\alpha = 0.01$. The derivative of the sigmoid is at most $1/4$, at $z = 0$, and goes to zero for large $|z|$, where the node saturates. ReLU does not saturate for $z > 0$, but a node with $z \le 0$ for all inputs gets no gradient and stops learning, a dead node. Leaky ReLU keeps the slope $\alpha$ for $z \le 0$, so its gradient is never zero. At $z = 0$, where ReLU has no derivative, we used 0. The output layer is linear, $f(z) = z$, for the regression, and the softmax for the classification.
+
+\subsection*{Backpropagation}
+
+The gradient with respect to all weights and biases follows from the chain rule, organised as the four equations of backpropagation \cite[Sec.~8.8.4]{HjorthJensen2026}. With $\boldsymbol{\delta}^l = \partial C / \partial \mathbf{z}^l$, one row per sample, they read in our batch form
+$$
+\boldsymbol{\delta}^L = f'(\mathbf{z}^L)\odot\frac{\partial C}{\partial \mathbf{a}^L}, \qquad
+\boldsymbol{\delta}^l = \left(\boldsymbol{\delta}^{l+1}\left(\mathbf{W}^{l+1}\right)^T\right)\odot f'(\mathbf{z}^l),
+$$
+$$
+\frac{\partial C}{\partial \mathbf{W}^l} = \left(\mathbf{a}^{l-1}\right)^T\boldsymbol{\delta}^l, \qquad
+\frac{\partial C}{\partial \mathbf{b}^l} = \sum_{i=1}^{n}\boldsymbol{\delta}^l_{i},
+$$
+where $\odot$ is the element-wise product and $\boldsymbol{\delta}^l_i$ is row $i$ of $\boldsymbol{\delta}^l$. For the matched pairs the first equation is replaced by $\boldsymbol{\delta}^L = c\,(\mathbf{a}^L - \mathbf{y})$. The product $(\mathbf{a}^{l-1})^T\boldsymbol{\delta}^l$ sums over the samples; for one sample it is the outer product of the input to the layer and its error. The forward pass stores $\mathbf{a}^{l-1}$ and $\mathbf{z}^l$ for every layer, and one backward pass then gives all the gradients. The backward pass needs about as many operations as the forward pass, so the whole gradient costs roughly two forward passes, whatever the number of parameters. This is reverse-mode automatic differentiation applied to a layered function \cite[Secs.~4.14, 8.8]{HjorthJensen2026}. Algorithm~\ref{alg:train} shows the training loop.
+
+\begin{algorithm}
+\caption{Training with minibatches}\label{alg:train}
+initialise $\mathbf{W}^l$ and $\mathbf{b}^l$ for $l = 1, \dots, L$\;
+\For{each epoch}{
+    shuffle the rows of the training data\;
+    \For{each minibatch $(\mathbf{X}_B, \mathbf{y}_B)$}{
+        forward pass from $\mathbf{a}^0 = \mathbf{X}_B$, storing $\mathbf{a}^{l-1}$ and $\mathbf{z}^l$\;
+        $\boldsymbol{\delta}^L = c\,(\mathbf{a}^L - \mathbf{y}_B)$\;
+        \For{$l = L, \dots, 1$}{
+            $\partial C/\partial\mathbf{W}^l = (\mathbf{a}^{l-1})^T\boldsymbol{\delta}^l$ $+$ penalty term\;
+            $\partial C/\partial\mathbf{b}^l = \sum_i \boldsymbol{\delta}^l_i$\;
+            \lIf{$l > 1$}{$\boldsymbol{\delta}^{l-1} = \left(\boldsymbol{\delta}^l(\mathbf{W}^l)^T\right)\odot f'(\mathbf{z}^{l-1})$}
+        }
+        update every $\mathbf{W}^l$ and $\mathbf{b}^l$ with the optimiser\;
+    }
+}
+\end{algorithm}
+
+\subsection*{Initialisation}
+
+The weights were drawn from a normal distribution with mean zero and a variance that depends on the number of inputs $n_{\mathrm{in}}$ to the layer \cite[Sec.~8.10]{HjorthJensen2026}. Since $z = \sum_i w_i a_i$ is a sum of $n_{\mathrm{in}}$ independent terms,
+$$
+\mathrm{Var}(z) = n_{\mathrm{in}}\,\mathrm{Var}(w)\,\mathrm{Var}(a),
+$$
+and $\mathrm{Var}(w) = 1/n_{\mathrm{in}}$ keeps the variance the same from layer to layer \cite{Glorot2010}. With too small weights the signal dies out, and with too large weights the sigmoid saturates. We used this for the sigmoid layers and for the linear and softmax output layers, as in Sec.~8.13 of the lecture notes, and $\mathrm{Var}(w) = 2/n_{\mathrm{in}}$ for ReLU and Leaky ReLU, which set about half of their inputs to zero \cite{He2015}. The weights must also start at different values, since equal weights give equal nodes that stay equal. The biases were set to 0.01 \cite[Sec.~8.10]{HjorthJensen2026}.
+
+\subsection*{Optimisers}
+
+We reused the update rules of Project 1 unchanged \cite[Secs.~4.7, 4.10, 4.11]{HjorthJensen2026}, and every element of every weight matrix and bias vector is updated with its own memory. With $g$ the gradient of a parameter $\theta$, plain gradient descent takes the step
+$$
+\theta \leftarrow \theta - \gamma g .
+$$
+RMSprop keeps a running average of the squared gradient and divides by its square root,
+$$
+s \leftarrow \rho s + (1 - \rho)g^2, \qquad \theta \leftarrow \theta - \gamma\,\frac{g}{\sqrt{s} + \epsilon},
+$$
+with $\rho = 0.99$ and $\epsilon = 10^{-8}$. Adam \cite{Kingma2015} does the same with $\beta_2 = 0.999$ in place of $\rho$, and also replaces $g$ by the running average
+$$
+m \leftarrow \beta_1 m + (1 - \beta_1)g
+$$
+with $\beta_1 = 0.9$, which works like momentum; both averages are corrected for starting at zero. Because of the division by $\sqrt{s}$, every parameter takes steps of about the size $\gamma$ in RMSprop and Adam, whether its gradient is large or small, while the step of plain gradient descent is $\gamma$ times the gradient.
+
+In stochastic gradient descent (SGD) the gradient is computed on a minibatch. The rows of the training data are shuffled at the start of every epoch and gone through in minibatches of 16 rows (Runge) or 128 rows (MNIST), so an epoch is one pass through the training data. Plain gradient descent (GD) uses all the training data in every step: with 64 training points GD makes one update per epoch, and SGD with minibatches of 16 makes four. We trained for a fixed number of epochs, 1000 for Runge and 20 for MNIST, and stopped earlier only if a parameter became infinite or not a number.
+
+\subsection*{Choice of hyperparameters}
+
+The learning rate $\gamma$, the penalty $\lambda$, the number of hidden layers and nodes, and the activation function were chosen on the validation data, two at a time in grids shown as heat maps. For Runge the validation set has only 16 points. The MSE on 16 points is a mean of 16 squared errors, and its standard error, the standard deviation of the squared errors divided by $\sqrt{16}$ \cite[Eq.~2.24]{HjorthJensen2026}, was 18--34\,\% of the MSE for the two models we checked (OLS of degree 12 and a ReLU network, seeds 42--44). In parts c and d we therefore report the median validation MSE over three data sets, seeds 42, 43 and 44, with new data, split and initial weights each time. For MNIST the validation set has $10\,000$ images, and the standard error of an accuracy $p$ is $\sqrt{p(1 - p)/n} = 0.0014$ at $p = 0.98$.
+
+\subsection*{Benchmarks and measures}
+
+In part b we compared with OLS of degree 12 on the seed-42 split, the degree with the lowest test MSE for that split in Project 1 (0.0086). In part d we compared with the final models of Project 1: OLS, Ridge and Lasso with the degree and $\lambda$ chosen by 5-fold cross-validation on the training part of each of 20 data sets (seeds 42--61). Since we know $f$, we also computed the mean squared noise $(y_i - f(x_i))^2$ in the test sets, which is the test MSE of the true function itself.
+
+For the classification the baseline is logistic regression, our network with no hidden layer, trained with the same code. An even simpler reference is to always guess the most common digit. We also compared with scikit-learn \cite{Pedregosa2011}: \texttt{LogisticRegression} with its default settings, which include an $L_2$ penalty, and \texttt{MLPClassifier} with the same hidden layer, optimiser, learning rate, minibatch size and number of epochs as our network, and no penalty.
+
+The accuracy is the share of correctly classified images. In the confusion matrix, element $(i, j)$ is the number of test images of digit $i$ classified as $j$. The precision of digit $k$ is the share of the images classified as $k$ that really are $k$ (diagonal element over column sum), and the recall is the share of the images of $k$ classified as $k$ (diagonal element over row sum) \cite[Sec.~5.12]{HjorthJensen2026}.
+
+\subsection*{Testing the code}
+
+The network, the activation and cost functions and the training loop are in \texttt{nn.py}, the update rules (\texttt{optim.py}) and the data and OLS code (\texttt{common.py}) are unchanged from Project 1, \texttt{main.py} has one function for each part of the project, and \texttt{tests.py} has two tests. The first compares our backpropagation with the gradient that \texttt{jax.grad} \cite{Jax2018} computes from the cost function, for a network with two hidden layers, each hidden activation, each cost with its output activation, and no penalty, $L_2$ and $L_1$. All gradients agree to within $10^{-12}$. The second uses that a network with no hidden layer and a linear output computes $\mathbf{X}\mathbf{W} + \mathbf{b}$, the OLS model with an intercept. Trained with plain gradient descent on the standardised design matrix of Project 1 (degree 5, seed 42), with $\gamma = 0.99/\mu_{\max}$, where $\mu_{\max}$ is the largest eigenvalue of the Hessian and $2/\mu_{\max}$ the stability limit from Project 1, the weights must reach the closed-form OLS solution, and the bias must be the mean of $y$, since the standardised columns have mean zero. After $20\,000$ epochs both agree to within $10^{-6}$:
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=terminal]
+PASS test_gradient_against_jax
+PASS test_linear_network_is_ols
+\end{lstlisting}
+\end{minipage}
+
+In addition, our confusion matrix is identical to scikit-learn's, and \texttt{MLPClassifier} gives nearly the same accuracy as our network (part e).

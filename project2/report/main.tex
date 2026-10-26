@@ -1,0 +1,57 @@
+% FYS-STK3155 Project 2. Compile with
+%   pdflatex main && bibtex main && pdflatex main && pdflatex main
+% Figures are read from ../Code/figures/. Every number in the text is taken
+% from the logs in ../Code/results/ (part_b.txt ... part_e.txt).
+\documentclass[english,notitlepage,reprint,nofootinbib,floatfix]{revtex4-1}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\graphicspath{{../Code/figures/}}
+
+% No paragraph indentation; a small space between paragraphs instead
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5\baselineskip plus 2pt minus 1pt}
+
+% Terminal-style blocks for program output
+\definecolor{termBg}{HTML}{0C0C0C}
+\definecolor{termText}{HTML}{CCCCCC}
+\lstdefinestyle{terminal}{
+  backgroundcolor=\color{termBg},
+  basicstyle=\ttfamily\scriptsize\color{termText},
+  columns=flexible, keepspaces=true,
+  breaklines=true, showstringspaces=false, frame=none,
+  xleftmargin=4pt, xrightmargin=4pt,
+  framexleftmargin=4pt, framexrightmargin=4pt,
+  framextopmargin=4pt, framexbottommargin=4pt,
+}
+
+\begin{document}
+\title{Regression and classification with a feed-forward neural network written from scratch}
+\author{andreand}
+% \author{suadrn}
+\affiliation{University of Oslo}
+\date{\today}
+
+\begin{abstract}
+We wrote our own feed-forward neural network with backpropagation, checked it against automatic differentiation and against ordinary least squares (OLS), and used it for regression on the noisy Runge function of Project 1 and for classification of the MNIST handwritten digits. One hidden layer of 50 sigmoid nodes was not better than OLS of degree 12: over ten data sets the median test MSE was 0.0132 against 0.0122. A ReLU network with three hidden layers of 50 nodes and a small learning rate gave 0.0093 on the 20 data sets of Project 1, against 0.0133 for Ridge, close to the noise level of 0.0091. $L_1$ and $L_2$ penalties gave no measurable improvement. Plain gradient descent needed a learning rate 100 times larger than RMSprop and Adam, and converged more slowly. On MNIST, one hidden layer of 200 ReLU nodes gave a test accuracy of 97.8\,\%, against 92.7\,\% for logistic regression, our network without hidden layers, and most of the remaining errors were between digits that can look alike, such as 4 and 9.
+\end{abstract}
+
+\maketitle
+
+\input{introduction.tex}
+\input{methods.tex}
+\input{results.tex}
+\input{evaluation.tex}
+\input{conclusion.tex}
+\input{appendix.tex}
+
+\bibliographystyle{apsrev4-1}
+\bibliography{refs}
+\end{document}

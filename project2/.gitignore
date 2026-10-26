@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+
+# Virtual environments
+.venv
+
+# The MNIST data (11 MB); see the README for where to download it
+mnist.npz
+
+# LaTeX helper files
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+
+#Other files
+exercisesweek*
+test.py
+tests.py
+Project2.ipynb
