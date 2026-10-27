@@ -18,6 +18,5 @@ mnist.npz
 
 #Other files
 exercisesweek*
-test.py
-tests.py
+/test.py
 Project2.ipynb
