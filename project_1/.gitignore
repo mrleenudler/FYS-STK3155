@@ -33,6 +33,7 @@ Project1.tex
 *.bbl
 *.blg
 *.synctex.gz
+*notes.bib
 
 # User process files
 notater og spørsmål til claude.txt

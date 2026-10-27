@@ -15,6 +15,7 @@ mnist.npz
 *.bbl
 *.blg
 *.synctex.gz
+*Notes.bib
 
 #Other files
 exercisesweek*
