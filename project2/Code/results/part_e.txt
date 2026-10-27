@@ -28,16 +28,16 @@ Same network (200 ReLU), other seeds for initialisation and minibatch order
   seed 2026:  epoch 19: 0.9791  epoch 20: 0.9798   epochs 11-20: 0.9750 - 0.9798
   seed 2027:  epoch 19: 0.9784  epoch 20: 0.9795   epochs 11-20: 0.9766 - 0.9801
   seed 2028:  epoch 19: 0.9795  epoch 20: 0.9703   epochs 11-20: 0.9703 - 0.9795
-  trained logistic regression (gamma = 1e-03, lambda = 0e+00) in 9 s
-  trained network 200 ReLU (gamma = 1e-03, lambda = 1e-05) in 74 s
+  trained logistic regression (gamma = 1e-03, lambda = 0e+00) in 11 s
+  trained network 200 ReLU (gamma = 1e-03, lambda = 1e-05) in 124 s
 
 Test set (10000 images), used once
   most frequent digit              accuracy 0.1135
   logistic regression              accuracy 0.9273 +- 0.0026
   network 200 ReLU                 accuracy 0.9777 +- 0.0015
-  scikit-learn LogisticRegression  accuracy 0.9245
+  scikit-learn LogisticRegression  accuracy 0.9242
   scikit-learn MLPClassifier       accuracy 0.9797
-  (most frequent digit in the training data: 1; scikit-learn LogisticRegression: lbfgs, 200 iterations, default L2 penalty C = 1, 43 s; MLPClassifier: same hidden layer, Adam, learning rate, minibatch size and 20 epochs as our network, no penalty, 70 s)
+  (most frequent digit in the training data: 1; scikit-learn LogisticRegression: lbfgs, 200 iterations, default L2 penalty C = 1, 24 s; MLPClassifier: same hidden layer, Adam, learning rate, minibatch size and 20 epochs as our network, no penalty, 43 s)
 
 Confusion matrix of the network 200 ReLU on the test set (rows true digit, columns predicted)
   agrees with scikit-learn: True

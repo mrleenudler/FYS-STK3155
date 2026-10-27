@@ -3,14 +3,13 @@ Part d) L2 and L1 penalties
 ========================================================================
 Network: 3 hidden layers of 50 relu nodes (overfits in part c), linear output, MSE + lambda * sum W^2 (L2) or lambda * sum |W| (L1) over all weights, biases not penalised.
 SGD + Adam, minibatch 16, 1000 epochs. L1 gradient: lambda * sign(W), sign(0) = 0.
-(grid read from results/part_d_grid.npz; delete the file to recompute)
 
 L2: median validation MSE over seeds 42-44 (rows lambda, columns gamma)
   lambda        1e-04      3e-04      1e-03      3e-03      1e-02
     0e+00   1.233e-02  1.304e-02  1.398e-02  1.568e-02  1.523e-02
     1e-06   1.292e-02  1.311e-02  1.424e-02  1.462e-02  1.514e-02
     1e-05   1.276e-02  1.331e-02  1.304e-02  1.502e-02  1.476e-02
-    1e-04   1.266e-02  1.254e-02  1.272e-02  1.324e-02  1.426e-02
+    1e-04   1.266e-02  1.259e-02  1.272e-02  1.324e-02  1.426e-02
     1e-03   1.270e-02  1.284e-02  1.298e-02  1.354e-02  1.374e-02
     1e-02   1.455e-02  1.633e-02  2.174e-02  2.263e-02  2.213e-02
   best: lambda = 0e+00, gamma = 1e-04, validation MSE 1.233e-02  (lambda = 0 at its best gamma: 1.233e-02)
@@ -18,12 +17,12 @@ L2: median validation MSE over seeds 42-44 (rows lambda, columns gamma)
 L1: median validation MSE over seeds 42-44 (rows lambda, columns gamma)
   lambda        1e-04      3e-04      1e-03      3e-03      1e-02
     0e+00   1.233e-02  1.304e-02  1.398e-02  1.568e-02  1.523e-02
-    1e-06   1.198e-02  1.270e-02  1.358e-02  1.319e-02  1.466e-02
-    1e-05   1.220e-02  1.295e-02  1.262e-02  1.390e-02  1.466e-02
-    1e-04   1.299e-02  1.378e-02  1.321e-02  1.314e-02  1.338e-02
-    1e-03   1.276e-02  1.308e-02  1.406e-02  1.394e-02  1.273e-02
-    1e-02   2.666e-02  2.425e-02  2.107e-02  2.044e-02  2.007e-02
-  best: lambda = 1e-06, gamma = 1e-04, validation MSE 1.198e-02  (lambda = 0 at its best gamma: 1.233e-02)
+    1e-06   1.199e-02  1.271e-02  1.382e-02  1.371e-02  1.466e-02
+    1e-05   1.220e-02  1.296e-02  1.248e-02  1.348e-02  1.503e-02
+    1e-04   1.299e-02  1.380e-02  1.316e-02  1.328e-02  1.359e-02
+    1e-03   1.278e-02  1.314e-02  1.405e-02  1.391e-02  1.261e-02
+    1e-02   2.665e-02  2.553e-02  2.108e-02  2.040e-02  2.021e-02
+  best: lambda = 1e-06, gamma = 1e-04, validation MSE 1.199e-02  (lambda = 0 at its best gamma: 1.233e-02)
 
 Test MSE on the 20 data sets of Project 1 (seeds 42-61), trained on all 80 points
 method                         lambda   gamma     median   25th-75th percentile

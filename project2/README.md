@@ -27,6 +27,7 @@ Author: andreand. The report is `report/main.pdf`.
 | `Code/figures/` | All figures (PDF) |
 | `report/` | LaTeX source of the report (`main.tex` and the section files) and the compiled PDF |
 | `requirements.txt` | The Python packages needed |
+| `pyproject.toml`, `uv.lock` | The same packages for uv, with the exact versions locked |
 
 ## Installation
 
@@ -39,8 +40,9 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-With [uv](https://docs.astral.sh/uv/) the same is `uv venv` followed by
-`uv pip install -r requirements.txt`.
+With [uv](https://docs.astral.sh/uv/), run `uv sync` in this folder instead. It
+installs the package versions locked in `uv.lock`. Then put `uv run` in front of
+the commands under Running, for instance `uv run python main.py`.
 
 The MNIST data are not in the repository. Download `mnist.npz` (11 MB) from
 <https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz> and put it in
@@ -61,7 +63,8 @@ Parts can also be named one by one, for instance `python main.py b c`. The
 hyperparameter grids of parts c, d and e are cached in `Code/results/*.npz`.
 Delete a file to compute its grid again; this adds 3-7 min (c), 4-8 min (d)
 and 8-17 min (e). The run times were measured on two different 2-core cloud
-machines; the lower numbers are from the faster one.
+machines; the lower numbers are from the faster one. On a Windows
+laptop, all parts with all grids recomputed took about 50 min.
 
 Every experiment is identified by seeds that fix the data, the splits, the
 initial weights and the order of the minibatches, so all runs are reproducible.

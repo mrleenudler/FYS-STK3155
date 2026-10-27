@@ -16,8 +16,8 @@ gamma                    GD   SGD + RMSprop      SGD + Adam
  1.0e-02          9.367e-02       9.656e-03       9.938e-03
  3.2e-02          7.744e-02       1.183e-02       1.254e-02
  1.0e-01          1.374e-02       2.882e-02       1.591e-02
- 3.2e-01          9.136e-02       9.015e-02       1.785e-02
- 1.0e+00          1.730e+04       9.432e-02       3.526e-02
+ 3.2e-01          9.136e-02       6.814e-02       1.785e-02
+ 1.0e+00          1.730e+04       8.075e-02       5.716e-02
   best GD: gamma = 1.0e-01, validation MSE 1.374e-02
   best SGD + RMSprop: gamma = 1.0e-03, validation MSE 6.489e-03
   best SGD + Adam: gamma = 1.0e-03, validation MSE 6.216e-03
@@ -30,10 +30,10 @@ Training curves at the best learning rate (MSE after 10 / 100 / 1000 epochs, tra
 Test MSE, trained on all 80 training points (seed 42), 1000 epochs
   OLS degree 12: 8.552e-03
 hidden     parameters              GD   SGD + RMSprop      SGD + Adam   time (s)
-50                151       2.363e-02       1.226e-02       1.005e-02        2.3
-100               301       6.509e-02       1.536e-02       8.310e-03        3.0
+50                151       2.363e-02       1.226e-02       1.005e-02        2.5
+100               301       6.509e-02       1.536e-02       8.310e-03        3.3
 50 x 50          2701       5.399e-02       1.114e-02       7.392e-03        4.6
-100 x 100       10401       5.719e-02       1.037e-02       7.790e-03        5.9
+100 x 100       10401       5.719e-02       1.037e-02       7.790e-03        7.0
 
 Repeated over seeds 42-51 (new data and split each time), test MSE
   OLS degree 12:        median 1.219e-02, quartiles 9.476e-03 - 1.398e-02

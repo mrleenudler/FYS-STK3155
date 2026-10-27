@@ -181,12 +181,12 @@ Test set (10000 images), used once
   most frequent digit              accuracy 0.1135
   logistic regression              accuracy 0.9273 +- 0.0026
   network 200 ReLU                 accuracy 0.9777 +- 0.0015
-  scikit-learn LogisticRegression  accuracy 0.9245
+  scikit-learn LogisticRegression  accuracy 0.9242
   scikit-learn MLPClassifier       accuracy 0.9797
 \end{lstlisting}
 \end{minipage}
 
-The network makes 223 errors on the $10\,000$ test images, against 727 for logistic regression, 69\,\% fewer. scikit-learn gets nearly the same accuracies with the same models, which supports our implementation; its network also differs from ours in the initialisation and the penalty. Logistic regression on raw pixels is known to give about 92\,\%, and convolutional networks above 99\,\% \cite{LeCun1998}. The network took about eight times longer to train than logistic regression (74\,s against 9\,s on our machine).
+The network makes 223 errors on the $10\,000$ test images, against 727 for logistic regression, 69\,\% fewer. scikit-learn gets nearly the same accuracies with the same models, which supports our implementation; its network also differs from ours in the initialisation and the penalty. Logistic regression on raw pixels is known to give about 92\,\%, and convolutional networks above 99\,\% \cite{LeCun1998}. The network took about ten times longer to train than logistic regression (75\,s against 7\,s on our machine).
 
 \emph{Why the hidden layer helps.} Logistic regression computes one score per digit, a weighted sum over the pixels $p$,
 $$

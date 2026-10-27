@@ -3,7 +3,6 @@ Part c) Activation functions, depth and width
 ========================================================================
 Runge data as in part b (64 training / 16 validation points), SGD + Adam, gamma = 0.001, minibatch 16, 1000 epochs.
 Weights ~ N(0, 1/n_in) for sigmoid and N(0, 2/n_in) for ReLU and Leaky ReLU (He), biases 0.01.
-(grid read from results/part_c_grid.npz; delete the file to recompute)
 
 Median validation MSE over seeds 42-44 (rows: hidden layers, columns: nodes per layer)
 OLS degree 12 on the same data: median validation MSE 1.191e-02
